@@ -1,13 +1,21 @@
 package com.hotel.parceltracking.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Data Transfer Object for Guest entity.
  * Used for API requests and responses.
+ * Using Lombok for reduced boilerplate code.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GuestDto {
     
     private Long id;
@@ -23,68 +31,25 @@ public class GuestDto {
     private boolean checkedIn;
     private List<ParcelDto> parcels;
     
-    // Constructors
-    public GuestDto() {}
-    
+    // Custom constructor for common use case (check-in)
     public GuestDto(String name, String roomNumber) {
         this.name = name;
         this.roomNumber = roomNumber;
+        this.checkedIn = false;
     }
     
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-    
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-    
-    public LocalDateTime getCheckInTime() {
-        return checkInTime;
-    }
-    
-    public void setCheckInTime(LocalDateTime checkInTime) {
-        this.checkInTime = checkInTime;
-    }
-    
-    public LocalDateTime getCheckOutTime() {
-        return checkOutTime;
-    }
-    
-    public void setCheckOutTime(LocalDateTime checkOutTime) {
-        this.checkOutTime = checkOutTime;
-    }
-    
-    public boolean isCheckedIn() {
-        return checkedIn;
-    }
-    
-    public void setCheckedIn(boolean checkedIn) {
-        this.checkedIn = checkedIn;
-    }
-    
-    public List<ParcelDto> getParcels() {
-        return parcels;
-    }
-    
-    public void setParcels(List<ParcelDto> parcels) {
-        this.parcels = parcels;
+    // Factory method for creating response DTOs
+    public static GuestDto of(Long id, String name, String roomNumber, 
+                             LocalDateTime checkInTime, LocalDateTime checkOutTime, 
+                             boolean checkedIn, List<ParcelDto> parcels) {
+        GuestDto dto = new GuestDto();
+        dto.setId(id);
+        dto.setName(name);
+        dto.setRoomNumber(roomNumber);
+        dto.setCheckInTime(checkInTime);
+        dto.setCheckOutTime(checkOutTime);
+        dto.setCheckedIn(checkedIn);
+        dto.setParcels(parcels);
+        return dto;
     }
 } 

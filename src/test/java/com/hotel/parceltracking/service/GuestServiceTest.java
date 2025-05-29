@@ -203,4 +203,21 @@ class GuestServiceTest {
         assertFalse(result);
         verify(guestRepository).isGuestCheckedInByRoomNumber("101");
     }
+
+    @Test
+    void getAllGuests_Success() {
+        // Given
+        List<Guest> guests = List.of(testGuest);
+        when(guestRepository.findAll()).thenReturn(guests);
+
+        // When
+        List<GuestDto> result = guestService.getAllGuests();
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("John Doe", result.get(0).getName());
+        assertEquals("101", result.get(0).getRoomNumber());
+        verify(guestRepository).findAll();
+    }
 } 

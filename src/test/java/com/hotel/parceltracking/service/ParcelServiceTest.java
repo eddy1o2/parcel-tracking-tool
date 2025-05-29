@@ -90,7 +90,7 @@ class ParcelServiceTest {
     @Test
     void acceptParcel_GuestNotCheckedIn() {
         // Given
-        testGuest.checkOut(); // Guest is checked out
+        testGuest.checkOut(); // Guest is not checked in
         when(guestRepository.findById(1L)).thenReturn(Optional.of(testGuest));
 
         // When & Then
@@ -98,13 +98,13 @@ class ParcelServiceTest {
                 IllegalArgumentException.class,
                 () -> parcelService.acceptParcel(testParcelDto)
         );
-        assertEquals("Cannot accept parcel for guest who is not checked in. Guest: John Doe", exception.getMessage());
+        assertEquals("Cannot accept parcel for guest who is not checked in: John Doe", exception.getMessage());
         verify(guestRepository).findById(1L);
         verify(parcelRepository, never()).save(any(Parcel.class));
     }
 
     @Test
-    void acceptParcel_TrackingNumberAlreadyExists() {
+    void acceptParcel_DuplicateTrackingNumber() {
         // Given
         when(guestRepository.findById(1L)).thenReturn(Optional.of(testGuest));
         when(parcelRepository.findByTrackingNumber("TRK123")).thenReturn(Optional.of(testParcel));

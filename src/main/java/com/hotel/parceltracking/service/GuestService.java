@@ -1,6 +1,7 @@
 package com.hotel.parceltracking.service;
 
 import com.hotel.parceltracking.dto.GuestDto;
+import com.hotel.parceltracking.dto.ParcelDto;
 import com.hotel.parceltracking.model.Guest;
 import com.hotel.parceltracking.repository.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,21 +145,23 @@ public class GuestService {
      * @return the guest DTO
      */
     private GuestDto convertToDto(Guest guest) {
-        GuestDto dto = new GuestDto();
-        dto.setId(guest.getId());
-        dto.setName(guest.getName());
-        dto.setRoomNumber(guest.getRoomNumber());
-        dto.setCheckInTime(guest.getCheckInTime());
-        dto.setCheckOutTime(guest.getCheckOutTime());
-        dto.setCheckedIn(guest.isCheckedIn());
+        List<ParcelDto> parcelDtos = null;
         
         // Include parcels if needed (lazy loading consideration)
         if (guest.getParcels() != null && !guest.getParcels().isEmpty()) {
-            dto.setParcels(guest.getParcels().stream()
+            parcelDtos = guest.getParcels().stream()
                     .map(parcelService::convertToDto)
-                    .toList());
+                    .toList();
         }
         
-        return dto;
+        return GuestDto.of(
+            guest.getId(),
+            guest.getName(),
+            guest.getRoomNumber(),
+            guest.getCheckInTime(),
+            guest.getCheckOutTime(),
+            guest.isCheckedIn(),
+            parcelDtos
+        );
     }
 } 

@@ -2,12 +2,20 @@ package com.hotel.parceltracking.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 /**
  * Data Transfer Object for Parcel entity.
  * Used for API requests and responses.
+ * Using Lombok for reduced boilerplate code.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ParcelDto {
     
     private Long id;
@@ -30,94 +38,30 @@ public class ParcelDto {
     private String guestName;
     private String guestRoomNumber;
     
-    // Constructors
-    public ParcelDto() {}
-    
+    // Custom constructor for common use case (accepting parcel)
     public ParcelDto(String trackingNumber, String sender, String description, Long guestId) {
         this.trackingNumber = trackingNumber;
         this.sender = sender;
         this.description = description;
         this.guestId = guestId;
+        this.collected = false;
     }
     
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-    
-    public void setTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
-    }
-    
-    public String getSender() {
-        return sender;
-    }
-    
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public LocalDateTime getArrivalTime() {
-        return arrivalTime;
-    }
-    
-    public void setArrivalTime(LocalDateTime arrivalTime) {
-        this.arrivalTime = arrivalTime;
-    }
-    
-    public LocalDateTime getCollectionTime() {
-        return collectionTime;
-    }
-    
-    public void setCollectionTime(LocalDateTime collectionTime) {
-        this.collectionTime = collectionTime;
-    }
-    
-    public boolean isCollected() {
-        return collected;
-    }
-    
-    public void setCollected(boolean collected) {
-        this.collected = collected;
-    }
-    
-    public Long getGuestId() {
-        return guestId;
-    }
-    
-    public void setGuestId(Long guestId) {
-        this.guestId = guestId;
-    }
-    
-    public String getGuestName() {
-        return guestName;
-    }
-    
-    public void setGuestName(String guestName) {
-        this.guestName = guestName;
-    }
-    
-    public String getGuestRoomNumber() {
-        return guestRoomNumber;
-    }
-    
-    public void setGuestRoomNumber(String guestRoomNumber) {
-        this.guestRoomNumber = guestRoomNumber;
+    // Factory method for creating response DTOs
+    public static ParcelDto of(Long id, String trackingNumber, String sender, String description,
+                              LocalDateTime arrivalTime, LocalDateTime collectionTime, boolean collected,
+                              Long guestId, String guestName, String guestRoomNumber) {
+        ParcelDto dto = new ParcelDto();
+        dto.setId(id);
+        dto.setTrackingNumber(trackingNumber);
+        dto.setSender(sender);
+        dto.setDescription(description);
+        dto.setArrivalTime(arrivalTime);
+        dto.setCollectionTime(collectionTime);
+        dto.setCollected(collected);
+        dto.setGuestId(guestId);
+        dto.setGuestName(guestName);
+        dto.setGuestRoomNumber(guestRoomNumber);
+        return dto;
     }
 } 

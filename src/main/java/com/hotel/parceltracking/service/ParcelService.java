@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class ParcelService {
         
         // Check if guest is currently checked in
         if (!guest.isCheckedIn()) {
-            throw new IllegalArgumentException("Cannot accept parcel for guest who is not checked in. Guest: " + guest.getName());
+            throw new IllegalArgumentException("Cannot accept parcel for guest who is not checked in: " + guest.getName());
         }
         
         // Check if tracking number already exists
@@ -51,10 +52,10 @@ public class ParcelService {
         }
         
         Parcel parcel = new Parcel(
-                parcelDto.getTrackingNumber(),
-                parcelDto.getSender(),
-                parcelDto.getDescription(),
-                guest
+            parcelDto.getTrackingNumber(),
+            parcelDto.getSender(),
+            parcelDto.getDescription(),
+            guest
         );
         
         Parcel savedParcel = parcelRepository.save(parcel);
@@ -170,18 +171,17 @@ public class ParcelService {
      * @return the parcel DTO
      */
     public ParcelDto convertToDto(Parcel parcel) {
-        ParcelDto dto = new ParcelDto();
-        dto.setId(parcel.getId());
-        dto.setTrackingNumber(parcel.getTrackingNumber());
-        dto.setSender(parcel.getSender());
-        dto.setDescription(parcel.getDescription());
-        dto.setArrivalTime(parcel.getArrivalTime());
-        dto.setCollectionTime(parcel.getCollectionTime());
-        dto.setCollected(parcel.isCollected());
-        dto.setGuestId(parcel.getGuest().getId());
-        dto.setGuestName(parcel.getGuest().getName());
-        dto.setGuestRoomNumber(parcel.getGuest().getRoomNumber());
-        
-        return dto;
+        return ParcelDto.of(
+            parcel.getId(),
+            parcel.getTrackingNumber(),
+            parcel.getSender(),
+            parcel.getDescription(),
+            parcel.getArrivalTime(),
+            parcel.getCollectionTime(),
+            parcel.isCollected(),
+            parcel.getGuest().getId(),
+            parcel.getGuest().getName(),
+            parcel.getGuest().getRoomNumber()
+        );
     }
 } 

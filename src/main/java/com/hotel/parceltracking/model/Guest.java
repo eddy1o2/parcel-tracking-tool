@@ -3,6 +3,11 @@ package com.hotel.parceltracking.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +18,10 @@ import java.util.List;
  */
 @Entity
 @Table(name = "guests")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = "parcels") // Exclude to avoid circular reference
 public class Guest {
     
     @Id
@@ -37,9 +46,7 @@ public class Guest {
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Parcel> parcels = new ArrayList<>();
     
-    // Constructors
-    public Guest() {}
-    
+    // Custom constructor
     public Guest(String name, String roomNumber, LocalDateTime checkInTime) {
         this.name = name;
         this.roomNumber = roomNumber;
@@ -71,66 +78,5 @@ public class Guest {
         return parcels.stream()
                 .filter(parcel -> !parcel.isCollected())
                 .toList();
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-    
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-    
-    public LocalDateTime getCheckInTime() {
-        return checkInTime;
-    }
-    
-    public void setCheckInTime(LocalDateTime checkInTime) {
-        this.checkInTime = checkInTime;
-    }
-    
-    public LocalDateTime getCheckOutTime() {
-        return checkOutTime;
-    }
-    
-    public void setCheckOutTime(LocalDateTime checkOutTime) {
-        this.checkOutTime = checkOutTime;
-    }
-    
-    public List<Parcel> getParcels() {
-        return parcels;
-    }
-    
-    public void setParcels(List<Parcel> parcels) {
-        this.parcels = parcels;
-    }
-    
-    @Override
-    public String toString() {
-        return "Guest{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", roomNumber='" + roomNumber + '\'' +
-                ", checkInTime=" + checkInTime +
-                ", checkOutTime=" + checkOutTime +
-                ", isCheckedIn=" + isCheckedIn() +
-                '}';
     }
 } 

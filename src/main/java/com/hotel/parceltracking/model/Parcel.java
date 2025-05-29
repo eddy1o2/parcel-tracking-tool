@@ -3,6 +3,11 @@ package com.hotel.parceltracking.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,6 +16,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "parcels")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = "guest") // Exclude to avoid circular reference
 public class Parcel {
     
     @Id
@@ -43,9 +52,7 @@ public class Parcel {
     @NotNull(message = "Guest is required")
     private Guest guest;
     
-    // Constructors
-    public Parcel() {}
-    
+    // Custom constructor
     public Parcel(String trackingNumber, String sender, String description, Guest guest) {
         this.trackingNumber = trackingNumber;
         this.sender = sender;
@@ -70,84 +77,5 @@ public class Parcel {
      */
     public boolean isAvailableForPickup() {
         return !collected;
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-    
-    public void setTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
-    }
-    
-    public String getSender() {
-        return sender;
-    }
-    
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public LocalDateTime getArrivalTime() {
-        return arrivalTime;
-    }
-    
-    public void setArrivalTime(LocalDateTime arrivalTime) {
-        this.arrivalTime = arrivalTime;
-    }
-    
-    public LocalDateTime getCollectionTime() {
-        return collectionTime;
-    }
-    
-    public void setCollectionTime(LocalDateTime collectionTime) {
-        this.collectionTime = collectionTime;
-    }
-    
-    public boolean isCollected() {
-        return collected;
-    }
-    
-    public void setCollected(boolean collected) {
-        this.collected = collected;
-    }
-    
-    public Guest getGuest() {
-        return guest;
-    }
-    
-    public void setGuest(Guest guest) {
-        this.guest = guest;
-    }
-    
-    @Override
-    public String toString() {
-        return "Parcel{" +
-                "id=" + id +
-                ", trackingNumber='" + trackingNumber + '\'' +
-                ", sender='" + sender + '\'' +
-                ", description='" + description + '\'' +
-                ", arrivalTime=" + arrivalTime +
-                ", collectionTime=" + collectionTime +
-                ", collected=" + collected +
-                ", guestId=" + (guest != null ? guest.getId() : null) +
-                '}';
     }
 } 

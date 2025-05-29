@@ -33,7 +33,13 @@ A Spring Boot application for hotel receptionists to track parcels for guests. T
 
 1. Clone the repository
 2. Navigate to the project directory
-3. Run the application:
+3. Build the application:
+
+```bash
+mvn clean compile
+```
+
+4. Run the application:
 
 ```bash
 mvn spring-boot:run
@@ -120,21 +126,27 @@ curl -X PUT http://localhost:8080/api/parcels/tracking/TRK123456/collect
 ## Database Schema
 
 ### Guests Table
-- `id` (Primary Key)
-- `name` (Guest name)
-- `room_number` (Room number)
-- `check_in_time` (Check-in timestamp)
-- `check_out_time` (Check-out timestamp, null if still checked in)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | Primary Key | Unique guest identifier |
+| `name` | VARCHAR | Guest name |
+| `room_number` | VARCHAR | Room number |
+| `check_in_time` | TIMESTAMP | Check-in timestamp |
+| `check_out_time` | TIMESTAMP | Check-out timestamp (null if still checked in) |
 
 ### Parcels Table
-- `id` (Primary Key)
-- `tracking_number` (Unique tracking number)
-- `sender` (Sender name)
-- `description` (Parcel description)
-- `arrival_time` (When parcel arrived)
-- `collection_time` (When parcel was collected, null if not collected)
-- `is_collected` (Boolean flag)
-- `guest_id` (Foreign key to guests table)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | Primary Key | Unique parcel identifier |
+| `tracking_number` | VARCHAR (Unique) | Unique tracking number |
+| `sender` | VARCHAR | Sender name |
+| `description` | VARCHAR | Parcel description |
+| `arrival_time` | TIMESTAMP | When parcel arrived |
+| `collection_time` | TIMESTAMP | When parcel was collected (null if not collected) |
+| `is_collected` | BOOLEAN | Collection status flag |
+| `guest_id` | Foreign Key | Reference to guests table |
 
 ## Testing
 
