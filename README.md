@@ -28,8 +28,11 @@ A Spring Boot application for hotel receptionists to track parcels for guests. T
 
 - Java 17 or higher
 - Maven 3.6 or higher
+- Docker (optional, for containerized deployment)
 
 ### Running the Application
+
+#### Option 1: Local Development
 
 1. Clone the repository
 2. Navigate to the project directory
@@ -46,6 +49,37 @@ mvn spring-boot:run
 ```
 
 The application will start on `http://localhost:8080`
+
+#### Option 2: Docker Container
+
+1. **Using the build script (recommended):**
+
+```bash
+./build-docker.sh
+```
+
+2. **Manual Docker commands:**
+
+```bash
+# Build the Docker image
+docker build -t parcel-tracking-tool:latest .
+
+# Run the container
+docker run -d --name parcel-tracking-container -p 8080:8080 parcel-tracking-tool:latest
+```
+
+3. **Using Docker Compose:**
+
+```bash
+# Build and start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+```
 
 ### API Documentation
 

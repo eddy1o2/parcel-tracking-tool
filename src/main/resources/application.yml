@@ -2,12 +2,13 @@ spring:
   application:
     name: parcel-tracking-tool
   
-  # H2 Database Configuration
+  # H2 Database Configuration for testing
+  # TODO: Change to MySQL/Postgres
   datasource:
     url: jdbc:h2:mem:parceldb
     driver-class-name: org.h2.Driver
     username: sa
-    password: password
+    password:
   
   # JPA Configuration
   jpa:
@@ -24,6 +25,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+      settings:
+        web-allow-others: false
 
 # Server Configuration
 server:
@@ -41,4 +44,17 @@ springdoc:
 logging:
   level:
     com.hotel.parceltracking: DEBUG
-    org.springframework.web: DEBUG 
+    org.springframework.web: DEBUG
+
+# Actuator configuration for Docker health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    defaults:
+      enabled: true 
