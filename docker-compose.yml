@@ -27,6 +27,3 @@ services:
 networks:
   parcel-network:
     driver: bridge
-
-# volumes:
-#   postgres_data: 

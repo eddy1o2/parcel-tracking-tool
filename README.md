@@ -157,6 +157,58 @@ curl -X PUT http://localhost:8080/api/parcels/tracking/TRK123456/collect
 3. **Parcel Collection**: Parcels can be marked as collected, preventing duplicate collection
 4. **Tracking Numbers**: Each parcel must have a unique tracking number
 
+## Error Handling
+
+The application provides comprehensive error handling with detailed, user-friendly error responses:
+
+### Exception Types
+
+- **ResourceNotFoundException** (404): When requested resources (guests, parcels) don't exist
+- **BusinessLogicException** (400): When business rules are violated (room occupied, guest not checked in, etc.)
+- **ValidationException** (400): When input validation fails (required fields missing, invalid format)
+- **RuntimeException** (500): For unexpected server errors
+
+### Error Response Format
+
+All errors return a standardized JSON response:
+
+```json
+{
+  "timestamp": "2025-05-31T21:30:44.763307",
+  "status": 400,
+  "error": "Business Logic Violation",
+  "message": "Room 102 is already occupied",
+  "path": "/api/guests/check-in",
+  "validationErrors": null
+}
+```
+
+### Validation Errors
+
+For validation failures, detailed field-specific errors are provided:
+
+```json
+{
+  "timestamp": "2025-05-31T21:31:02.987985",
+  "status": 400,
+  "error": "Validation Failed",
+  "message": "Input validation failed",
+  "path": "/api/guests/check-in",
+  "validationErrors": {
+    "roomNumber": "Room number is required",
+    "name": "Guest name is required"
+  }
+}
+```
+
+### HTTP Status Codes
+
+- **200 OK**: Successful operations
+- **201 Created**: Resource successfully created
+- **400 Bad Request**: Business logic violations or validation errors
+- **404 Not Found**: Requested resource doesn't exist
+- **500 Internal Server Error**: Unexpected server errors
+
 ## Database Schema
 
 ### Guests Table

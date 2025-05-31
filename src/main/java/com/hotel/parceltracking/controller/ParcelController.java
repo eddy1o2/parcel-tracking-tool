@@ -38,17 +38,13 @@ public class ParcelController {
     @Operation(summary = "Accept a parcel", description = "Accepts a new parcel for a checked-in guest")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Parcel accepted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input, guest not found, or guest not checked in"),
+            @ApiResponse(responseCode = "400", description = "Invalid input, guest not checked in, or duplicate tracking number"),
+            @ApiResponse(responseCode = "404", description = "Guest not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<ParcelDto> acceptParcel(
-            @Valid @RequestBody ParcelDto parcelDto) {
-        try {
-            ParcelDto acceptedParcel = parcelService.acceptParcel(parcelDto);
-            return new ResponseEntity<>(acceptedParcel, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ParcelDto> acceptParcel(@Valid @RequestBody ParcelDto parcelDto) {
+        ParcelDto acceptedParcel = parcelService.acceptParcel(parcelDto);
+        return new ResponseEntity<>(acceptedParcel, HttpStatus.CREATED);
     }
     
     /**
@@ -58,17 +54,13 @@ public class ParcelController {
     @Operation(summary = "Collect a parcel by ID", description = "Marks a parcel as collected")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Parcel collected successfully"),
-            @ApiResponse(responseCode = "400", description = "Parcel not found or already collected"),
+            @ApiResponse(responseCode = "400", description = "Parcel already collected"),
+            @ApiResponse(responseCode = "404", description = "Parcel not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<ParcelDto> collectParcel(
-            @Parameter(description = "Parcel ID") @PathVariable Long parcelId) {
-        try {
-            ParcelDto collectedParcel = parcelService.collectParcel(parcelId);
-            return ResponseEntity.ok(collectedParcel);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ParcelDto> collectParcel(@Parameter(description = "Parcel ID") @PathVariable Long parcelId) {
+        ParcelDto collectedParcel = parcelService.collectParcel(parcelId);
+        return ResponseEntity.ok(collectedParcel);
     }
     
     /**
@@ -78,17 +70,13 @@ public class ParcelController {
     @Operation(summary = "Collect a parcel by tracking number", description = "Marks a parcel as collected using tracking number")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Parcel collected successfully"),
-            @ApiResponse(responseCode = "400", description = "Parcel not found or already collected"),
+            @ApiResponse(responseCode = "400", description = "Parcel already collected"),
+            @ApiResponse(responseCode = "404", description = "Parcel not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<ParcelDto> collectParcelByTrackingNumber(
-            @Parameter(description = "Tracking number") @PathVariable String trackingNumber) {
-        try {
-            ParcelDto collectedParcel = parcelService.collectParcelByTrackingNumber(trackingNumber);
-            return ResponseEntity.ok(collectedParcel);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ParcelDto> collectParcelByTrackingNumber(@Parameter(description = "Tracking number") @PathVariable String trackingNumber) {
+        ParcelDto collectedParcel = parcelService.collectParcelByTrackingNumber(trackingNumber);
+        return ResponseEntity.ok(collectedParcel);
     }
     
     /**
@@ -97,8 +85,7 @@ public class ParcelController {
     @GetMapping("/guest/{guestId}/available")
     @Operation(summary = "Get available parcels for guest", description = "Retrieves all uncollected parcels for a specific guest")
     @ApiResponse(responseCode = "200", description = "Available parcels retrieved successfully")
-    public ResponseEntity<List<ParcelDto>> getAvailableParcelsForGuest(
-            @Parameter(description = "Guest ID") @PathVariable Long guestId) {
+    public ResponseEntity<List<ParcelDto>> getAvailableParcelsForGuest(@Parameter(description = "Guest ID") @PathVariable Long guestId) {
         List<ParcelDto> availableParcels = parcelService.getAvailableParcelsForGuest(guestId);
         return ResponseEntity.ok(availableParcels);
     }
@@ -109,8 +96,7 @@ public class ParcelController {
     @GetMapping("/room/{roomNumber}/available")
     @Operation(summary = "Get available parcels by room number", description = "Retrieves all uncollected parcels for a guest by room number")
     @ApiResponse(responseCode = "200", description = "Available parcels retrieved successfully")
-    public ResponseEntity<List<ParcelDto>> getAvailableParcelsForGuestByRoomNumber(
-            @Parameter(description = "Room number") @PathVariable String roomNumber) {
+    public ResponseEntity<List<ParcelDto>> getAvailableParcelsForGuestByRoomNumber(@Parameter(description = "Room number") @PathVariable String roomNumber) {
         List<ParcelDto> availableParcels = parcelService.getAvailableParcelsForGuestByRoomNumber(roomNumber);
         return ResponseEntity.ok(availableParcels);
     }
@@ -157,13 +143,8 @@ public class ParcelController {
             @ApiResponse(responseCode = "200", description = "Parcel found"),
             @ApiResponse(responseCode = "404", description = "Parcel not found")
     })
-    public ResponseEntity<ParcelDto> getParcelByTrackingNumber(
-            @Parameter(description = "Tracking number") @PathVariable String trackingNumber) {
-        try {
-            ParcelDto parcel = parcelService.getParcelByTrackingNumber(trackingNumber);
-            return ResponseEntity.ok(parcel);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ParcelDto> getParcelByTrackingNumber(@Parameter(description = "Tracking number") @PathVariable String trackingNumber) {
+        ParcelDto parcel = parcelService.getParcelByTrackingNumber(trackingNumber);
+        return ResponseEntity.ok(parcel);
     }
 } 

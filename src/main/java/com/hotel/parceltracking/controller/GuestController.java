@@ -41,14 +41,9 @@ public class GuestController {
             @ApiResponse(responseCode = "400", description = "Invalid input or room already occupied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<GuestDto> checkInGuest(
-            @Valid @RequestBody GuestDto guestDto) {
-        try {
-            GuestDto checkedInGuest = guestService.checkInGuest(guestDto);
-            return new ResponseEntity<>(checkedInGuest, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<GuestDto> checkInGuest(@Valid @RequestBody GuestDto guestDto) {
+        GuestDto checkedInGuest = guestService.checkInGuest(guestDto);
+        return new ResponseEntity<>(checkedInGuest, HttpStatus.CREATED);
     }
     
     /**
@@ -58,17 +53,13 @@ public class GuestController {
     @Operation(summary = "Check out a guest by ID", description = "Checks out a guest from the hotel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Guest checked out successfully"),
-            @ApiResponse(responseCode = "400", description = "Guest not found or already checked out"),
+            @ApiResponse(responseCode = "400", description = "Guest already checked out"),
+            @ApiResponse(responseCode = "404", description = "Guest not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<GuestDto> checkOutGuest(
-            @Parameter(description = "Guest ID") @PathVariable Long guestId) {
-        try {
-            GuestDto checkedOutGuest = guestService.checkOutGuest(guestId);
-            return ResponseEntity.ok(checkedOutGuest);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<GuestDto> checkOutGuest(@Parameter(description = "Guest ID") @PathVariable Long guestId) {
+        GuestDto checkedOutGuest = guestService.checkOutGuest(guestId);
+        return ResponseEntity.ok(checkedOutGuest);
     }
     
     /**
@@ -102,14 +93,9 @@ public class GuestController {
             @ApiResponse(responseCode = "200", description = "Guest found"),
             @ApiResponse(responseCode = "404", description = "Guest not found")
     })
-    public ResponseEntity<GuestDto> getGuestById(
-            @Parameter(description = "Guest ID") @PathVariable Long guestId) {
-        try {
-            GuestDto guest = guestService.getGuestById(guestId);
-            return ResponseEntity.ok(guest);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<GuestDto> getGuestById(@Parameter(description = "Guest ID") @PathVariable Long guestId) {
+        GuestDto guest = guestService.getGuestById(guestId);
+        return ResponseEntity.ok(guest);
     }
     
     /**
@@ -118,8 +104,7 @@ public class GuestController {
     @GetMapping("/room/{roomNumber}/status")
     @Operation(summary = "Check guest status by room number", description = "Checks if a guest is currently checked in for a specific room")
     @ApiResponse(responseCode = "200", description = "Guest status retrieved successfully")
-    public ResponseEntity<Boolean> isGuestCheckedIn(
-            @Parameter(description = "Room number") @PathVariable String roomNumber) {
+    public ResponseEntity<Boolean> isGuestCheckedIn(@Parameter(description = "Room number") @PathVariable String roomNumber) {
         boolean isCheckedIn = guestService.isGuestCheckedIn(roomNumber);
         return ResponseEntity.ok(isCheckedIn);
     }

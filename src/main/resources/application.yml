@@ -57,4 +57,4 @@ management:
       show-details: when-authorized
   health:
     defaults:
-      enabled: true 
+      enabled: true

@@ -1,6 +1,8 @@
 package com.hotel.parceltracking.service;
 
 import com.hotel.parceltracking.dto.GuestDto;
+import com.hotel.parceltracking.exception.BusinessLogicException;
+import com.hotel.parceltracking.exception.ResourceNotFoundException;
 import com.hotel.parceltracking.model.Guest;
 import com.hotel.parceltracking.repository.GuestRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,8 +71,8 @@ class GuestServiceTest {
         when(guestRepository.isGuestCheckedInByRoomNumber("101")).thenReturn(true);
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BusinessLogicException exception = assertThrows(
+                BusinessLogicException.class,
                 () -> guestService.checkInGuest(testGuestDto)
         );
         assertEquals("Room 101 is already occupied", exception.getMessage());
@@ -101,8 +103,8 @@ class GuestServiceTest {
         when(guestRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> guestService.checkOutGuest(1L)
         );
         assertEquals("Guest not found with ID: 1", exception.getMessage());
@@ -117,8 +119,8 @@ class GuestServiceTest {
         when(guestRepository.findById(1L)).thenReturn(Optional.of(testGuest));
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BusinessLogicException exception = assertThrows(
+                BusinessLogicException.class,
                 () -> guestService.checkOutGuest(1L)
         );
         assertEquals("Guest is already checked out", exception.getMessage());
@@ -169,8 +171,8 @@ class GuestServiceTest {
         when(guestRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> guestService.getGuestById(1L)
         );
         assertEquals("Guest not found with ID: 1", exception.getMessage());

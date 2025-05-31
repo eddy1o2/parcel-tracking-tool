@@ -2,6 +2,8 @@ package com.hotel.parceltracking.service;
 
 import com.hotel.parceltracking.dto.GuestDto;
 import com.hotel.parceltracking.dto.ParcelDto;
+import com.hotel.parceltracking.exception.BusinessLogicException;
+import com.hotel.parceltracking.exception.ResourceNotFoundException;
 import com.hotel.parceltracking.model.Guest;
 import com.hotel.parceltracking.repository.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,13 @@ public class GuestService {
      * Checks in a new guest to the hotel.
      * @param guestDto the guest information
      * @return the checked-in guest
-     * @throws IllegalArgumentException if room is already occupied
+     * @throws BusinessLogicException if room is already occupied
      */
+    @Transactional
     public GuestDto checkInGuest(GuestDto guestDto) {
         // Check if room is already occupied
         if (guestRepository.isGuestCheckedInByRoomNumber(guestDto.getRoomNumber())) {
-            throw new IllegalArgumentException("Room " + guestDto.getRoomNumber() + " is already occupied");
+            throw new BusinessLogicException("Room " + guestDto.getRoomNumber() + " is already occupied");
         }
         
         Guest guest = new Guest(guestDto.getName(), guestDto.getRoomNumber(), LocalDateTime.now());
@@ -51,14 +54,15 @@ public class GuestService {
      * Checks out a guest from the hotel.
      * @param guestId the guest ID
      * @return the checked-out guest
-     * @throws IllegalArgumentException if guest not found or already checked out
+     * @throws ResourceNotFoundException if guest not found
+     * @throws BusinessLogicException if guest already checked out
      */
     public GuestDto checkOutGuest(Long guestId) {
         Guest guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new IllegalArgumentException("Guest not found with ID: " + guestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Guest not found with ID: " + guestId));
         
         if (!guest.isCheckedIn()) {
-            throw new IllegalArgumentException("Guest is already checked out");
+            throw new BusinessLogicException("Guest is already checked out");
         }
         
         guest.checkOut();
@@ -71,14 +75,14 @@ public class GuestService {
      * Checks out a guest by room number.
      * @param roomNumber the room number
      * @return the checked-out guest
-     * @throws IllegalArgumentException if no checked-in guest found in the room
+     * @throws ResourceNotFoundException if no checked-in guest found in the room
      */
     public GuestDto checkOutGuestByRoomNumber(String roomNumber) {
         List<Guest> checkedInGuests = guestRepository.findAllCheckedInGuests();
         Guest guest = checkedInGuests.stream()
                 .filter(g -> g.getRoomNumber().equals(roomNumber))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No checked-in guest found in room: " + roomNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("No checked-in guest found in room: " + roomNumber));
         
         return checkOutGuest(guest.getId());
     }
@@ -109,12 +113,12 @@ public class GuestService {
      * Finds a guest by ID.
      * @param guestId the guest ID
      * @return the guest if found
-     * @throws IllegalArgumentException if guest not found
+     * @throws ResourceNotFoundException if guest not found
      */
     @Transactional(readOnly = true)
     public GuestDto getGuestById(Long guestId) {
         Guest guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new IllegalArgumentException("Guest not found with ID: " + guestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Guest not found with ID: " + guestId));
         return convertToDto(guest);
     }
     

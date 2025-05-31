@@ -1,6 +1,8 @@
 package com.hotel.parceltracking.service;
 
 import com.hotel.parceltracking.dto.ParcelDto;
+import com.hotel.parceltracking.exception.BusinessLogicException;
+import com.hotel.parceltracking.exception.ResourceNotFoundException;
 import com.hotel.parceltracking.model.Guest;
 import com.hotel.parceltracking.model.Parcel;
 import com.hotel.parceltracking.repository.GuestRepository;
@@ -33,21 +35,22 @@ public class ParcelService {
      * Validates that the guest is currently checked in before accepting the parcel.
      * @param parcelDto the parcel information
      * @return the accepted parcel
-     * @throws IllegalArgumentException if guest not found or not checked in
+     * @throws ResourceNotFoundException if guest not found
+     * @throws BusinessLogicException if guest not checked in or tracking number already exists
      */
     public ParcelDto acceptParcel(ParcelDto parcelDto) {
         // Find the guest
         Guest guest = guestRepository.findById(parcelDto.getGuestId())
-                .orElseThrow(() -> new IllegalArgumentException("Guest not found with ID: " + parcelDto.getGuestId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Guest not found with ID: " + parcelDto.getGuestId()));
         
         // Check if guest is currently checked in
         if (!guest.isCheckedIn()) {
-            throw new IllegalArgumentException("Cannot accept parcel for guest who is not checked in: " + guest.getName());
+            throw new BusinessLogicException("Cannot accept parcel for guest who is not checked in: " + guest.getName());
         }
         
         // Check if tracking number already exists
         if (parcelRepository.findByTrackingNumber(parcelDto.getTrackingNumber()).isPresent()) {
-            throw new IllegalArgumentException("Parcel with tracking number " + parcelDto.getTrackingNumber() + " already exists");
+            throw new BusinessLogicException("Parcel with tracking number " + parcelDto.getTrackingNumber() + " already exists");
         }
         
         Parcel parcel = new Parcel(
@@ -65,14 +68,15 @@ public class ParcelService {
      * Marks a parcel as collected.
      * @param parcelId the parcel ID
      * @return the collected parcel
-     * @throws IllegalArgumentException if parcel not found or already collected
+     * @throws ResourceNotFoundException if parcel not found
+     * @throws BusinessLogicException if parcel already collected
      */
     public ParcelDto collectParcel(Long parcelId) {
         Parcel parcel = parcelRepository.findById(parcelId)
-                .orElseThrow(() -> new IllegalArgumentException("Parcel not found with ID: " + parcelId));
+                .orElseThrow(() -> new ResourceNotFoundException("Parcel not found with ID: " + parcelId));
         
         if (parcel.isCollected()) {
-            throw new IllegalArgumentException("Parcel is already collected");
+            throw new BusinessLogicException("Parcel is already collected");
         }
         
         parcel.markAsCollected();
@@ -85,11 +89,12 @@ public class ParcelService {
      * Marks a parcel as collected by tracking number.
      * @param trackingNumber the tracking number
      * @return the collected parcel
-     * @throws IllegalArgumentException if parcel not found or already collected
+     * @throws ResourceNotFoundException if parcel not found
+     * @throws BusinessLogicException if parcel already collected
      */
     public ParcelDto collectParcelByTrackingNumber(String trackingNumber) {
         Parcel parcel = parcelRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Parcel not found with tracking number: " + trackingNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Parcel not found with tracking number: " + trackingNumber));
         
         return collectParcel(parcel.getId());
     }
@@ -155,12 +160,12 @@ public class ParcelService {
      * Finds a parcel by tracking number.
      * @param trackingNumber the tracking number
      * @return the parcel if found
-     * @throws IllegalArgumentException if parcel not found
+     * @throws ResourceNotFoundException if parcel not found
      */
     @Transactional(readOnly = true)
     public ParcelDto getParcelByTrackingNumber(String trackingNumber) {
         Parcel parcel = parcelRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Parcel not found with tracking number: " + trackingNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Parcel not found with tracking number: " + trackingNumber));
         return convertToDto(parcel);
     }
     

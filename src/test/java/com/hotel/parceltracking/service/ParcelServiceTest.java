@@ -1,6 +1,8 @@
 package com.hotel.parceltracking.service;
 
 import com.hotel.parceltracking.dto.ParcelDto;
+import com.hotel.parceltracking.exception.BusinessLogicException;
+import com.hotel.parceltracking.exception.ResourceNotFoundException;
 import com.hotel.parceltracking.model.Guest;
 import com.hotel.parceltracking.model.Parcel;
 import com.hotel.parceltracking.repository.GuestRepository;
@@ -78,8 +80,8 @@ class ParcelServiceTest {
         when(guestRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> parcelService.acceptParcel(testParcelDto)
         );
         assertEquals("Guest not found with ID: 1", exception.getMessage());
@@ -94,8 +96,8 @@ class ParcelServiceTest {
         when(guestRepository.findById(1L)).thenReturn(Optional.of(testGuest));
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BusinessLogicException exception = assertThrows(
+                BusinessLogicException.class,
                 () -> parcelService.acceptParcel(testParcelDto)
         );
         assertEquals("Cannot accept parcel for guest who is not checked in: John Doe", exception.getMessage());
@@ -110,8 +112,8 @@ class ParcelServiceTest {
         when(parcelRepository.findByTrackingNumber("TRK123")).thenReturn(Optional.of(testParcel));
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BusinessLogicException exception = assertThrows(
+                BusinessLogicException.class,
                 () -> parcelService.acceptParcel(testParcelDto)
         );
         assertEquals("Parcel with tracking number TRK123 already exists", exception.getMessage());
@@ -142,8 +144,8 @@ class ParcelServiceTest {
         when(parcelRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> parcelService.collectParcel(1L)
         );
         assertEquals("Parcel not found with ID: 1", exception.getMessage());
@@ -158,8 +160,8 @@ class ParcelServiceTest {
         when(parcelRepository.findById(1L)).thenReturn(Optional.of(testParcel));
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BusinessLogicException exception = assertThrows(
+                BusinessLogicException.class,
                 () -> parcelService.collectParcel(1L)
         );
         assertEquals("Parcel is already collected", exception.getMessage());
@@ -238,8 +240,8 @@ class ParcelServiceTest {
         when(parcelRepository.findByTrackingNumber("TRK123")).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> parcelService.getParcelByTrackingNumber("TRK123")
         );
         assertEquals("Parcel not found with tracking number: TRK123", exception.getMessage());
